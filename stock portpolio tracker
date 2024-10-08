@@ -1,0 +1,45 @@
+import pandas as pd
+import yfinance as yf
+
+# Define your stock portfolio
+portfolio = {
+    'AAPL': {'shares': 10, 'purchase_price': 150},
+    'GOOGL': {'shares': 5, 'purchase_price': 2800},
+    'MSFT': {'shares': 8, 'purchase_price': 300}
+}
+
+# Function to fetch current prices and calculate portfolio value
+def get_portfolio_value(portfolio):
+    total_value = 0
+    data = {}
+    
+    for symbol, info in portfolio.items():
+        # Fetch the current stock price
+        stock = yf.Ticker(symbol)
+        current_price = stock.history(period='1d')['Close'].iloc[-1]
+        
+        # Calculate value and profit
+        shares = info['shares']
+        purchase_price = info['purchase_price']
+        current_value = current_price * shares
+        profit = (current_price - purchase_price) * shares
+        
+        data[symbol] = {
+            'current_price': current_price,
+            'current_value': current_value,
+            'profit': profit
+        }
+        
+        total_value += current_value
+
+    return total_value, data
+
+# Calculate and display portfolio value
+total_value, details = get_portfolio_value(portfolio)
+
+print(f"Total Portfolio Value: ${total_value:.2f}")
+print("\nStock Details:")
+for symbol, info in details.items():
+    print(f"{symbol}: Current Price: ${info['current_price']:.2f}, "
+          f"Current Value: ${info['current_value']:.2f}, "
+          f"Profit: ${info['profit']:.2f}")
